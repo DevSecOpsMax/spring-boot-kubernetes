@@ -69,7 +69,7 @@ stages:
           wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
           sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
           trivy image mexparedes/spring-boot-kubernetes:latest
-          displayName: Image Scan
+        displayName: Image Scan
 
       - task: Docker@2
         inputs:
