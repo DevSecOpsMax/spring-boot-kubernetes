@@ -2,11 +2,29 @@
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
+trigger:
+- azure
 
 pool:
   vmImage: ubuntu-latest
 
 steps:
+- task: Maven@4
+  inputs:
+    mavenPomFile: 'pom.xml'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    javaHomeOption: 'JDKVersion'
+    mavenVersionOption: 'Default'
+    mavenAuthenticateFeed: false
+    effectivePomSkip: false
+    sonarQubeRunAnalysis: false
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'sonarcloud'
+    organization: 'devsecopsmax'
+    projectKey: 'DevSecOpsMax_spring-boot-kubernetes'
+    projectName: 'spring-boot-kubernetes'
 
 - task: Maven@4
   inputs:
@@ -19,26 +37,10 @@ steps:
     effectivePomSkip: false
     sonarQubeRunAnalysis: true
     sqMavenPluginVersionChoice: 'pom'
-- task: SonarCloudPrepare@1
-  inputs:
-    SonarCloud: 'sonarcloud'
-    organization: 'devsecopsmax'
-    projectKey: 'DevSecOpsMax_spring-boot-kubernetes'
-    projectName: 'spring-boot-kubernetes'
 
-- task: Gradle@3
-  inputs:
-    gradleWrapperFile: 'gradlew'
-    tasks: 'sonarqube'
-    publishJUnitResults: true
-    testResultsFiles: '**/TEST-*.pdf'
-    javaHomeOption: 'JDKVersion'
-    sonarQubeRunAnalysis: true
-    sqGradlePluginVersionChoice: 'specify'
-    sonarQubeGradlePluginVersion: '3.3'
-    spotBugsAnalysis: false
 - task: dependency-check-build-task@6
   inputs:
     projectName: 'spring-boot-kubernetes'
     scanPath: '$(Build.SourcesDirectory)/build/libs'
     format: 'HTML'
+
