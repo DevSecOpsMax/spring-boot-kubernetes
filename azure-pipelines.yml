@@ -72,7 +72,7 @@ stages:
 
 - stage: Container Security 
   jobs:
-  - job: Container-Security
+  - job: Container_Security
     displayName: 'Container Security'
     steps:
       - task: Maven@4
