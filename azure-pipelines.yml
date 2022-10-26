@@ -2,74 +2,115 @@
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
+
 trigger:
 - main
 
 pool:
   vmImage: ubuntu-latest
+stages:
+- stage: SAST 
+  jobs:
+  - job: build
+    displayName: 'Build'
+    steps:
+      - task: Maven@4
+        inputs:
+          mavenPomFile: 'pom.xml'
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
 
-steps:
-- task: Maven@4
-  inputs:
-    mavenPomFile: 'pom.xml'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    javaHomeOption: 'JDKVersion'
-    mavenVersionOption: 'Default'
-    mavenAuthenticateFeed: false
-    effectivePomSkip: false
-    sonarQubeRunAnalysis: false
-- task: SonarCloudPrepare@1
-  inputs:
-    SonarCloud: 'sonarcloud'
-    organization: 'devsecopsmax'
-    projectKey: 'DevSecOpsMax_spring-boot-kubernetes'
-    projectName: 'spring-boot-kubernetes'
+      - task: SonarCloudPrepare@1
 
-- task: Maven@4
-  inputs:
-    mavenPomFile: 'pom.xml'
-    publishJUnitResults: true
-    testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    javaHomeOption: 'JDKVersion'
-    mavenVersionOption: 'Default'
-    mavenAuthenticateFeed: false
-    effectivePomSkip: false
-    sonarQubeRunAnalysis: true
-    sqMavenPluginVersionChoice: 'pom'
+        inputs:
+          SonarCloud: 'sonarcloud'
+          organization: 'devsecopsmax'
+          projectKey: 'DevSecOpsMax_spring-boot-kubernetes'
+          projectName: 'spring-boot-kubernetes'
 
-- task: dependency-check-build-task@6
-  inputs:
-    projectName: 'spring-boot-kubernetes'
-    scanPath: '$(Pipeline.Workspace)'
-    format: 'HTML'
-- task: DockerInstaller@0
-  inputs:
-    dockerVersion: '17.09.0-ce'
+      - task: Maven@4
+        inputs:
+          mavenPomFile: 'pom.xml'
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: true
+          sqMavenPluginVersionChoice: 'pom'
 
-- task: Docker@2
-  inputs:
-    containerRegistry: 'Docker'
-    command: 'login'
+- stage: SCA 
+  jobs:
+  - job: SCA
+    displayName: 'SCA'
+    steps:
+    
+        - task: Maven@4
+          inputs:
+            mavenPomFile: 'pom.xml'
+            publishJUnitResults: true
+            testResultsFiles: '**/surefire-reports/TEST-*.xml'
+            javaHomeOption: 'JDKVersion'
+            mavenVersionOption: 'Default'
+            mavenAuthenticateFeed: false
+            effectivePomSkip: false
+            sonarQubeRunAnalysis: false
 
-- task: Docker@2
-  inputs:
-    containerRegistry: 'Docker'
-    repository: 'mexparedes/spring-boot-kubernetes'
-    command: 'build'
-    Dockerfile: '**/Dockerfile'
-    tags: 'latest'
+        - task: dependency-check-build-task@6
+          inputs:
+            projectName: 'spring-boot-kubernetes'
+            scanPath: '$(Pipeline.Workspace)'
+            format: 'HTML'
+       
 
-- script: | 
-    sudo apt-get install -y rpm
-    wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
-    sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
-    trivy image mexparedes/spring-boot-kubernetes:latest
-  displayName: Image Scan
-- task: Docker@2
-  inputs:
-    containerRegistry: 'Docker'
-    repository: 'mexparedes/spring-boot-kubernetes'
-    command: 'push'
-    tags: 'latest'
 
+- stage: Container Security 
+  jobs:
+  - job: Container-Security
+    displayName: 'Container Security'
+    steps:
+      - task: Maven@4
+        inputs:
+          mavenPomFile: 'pom.xml'
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
+          javaHomeOption: 'JDKVersion'
+          mavenVersionOption: 'Default'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+      - task: DockerInstaller@0
+        inputs:
+          dockerVersion: '17.09.0-ce'
+      - task: Docker@2
+        inputs:
+          containerRegistry: 'Docker'
+          command: 'login'
+
+      - task: Docker@2
+        inputs:
+          containerRegistry: 'Docker'
+          repository: 'mexparedes/spring-boot-kubernetes'
+          command: 'build'
+          Dockerfile: '**/Dockerfile'
+          tags: 'latest'
+
+      - script: | 
+          sudo apt-get install -y rpm
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
+          sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
+          trivy image mexparedes/spring-boot-kubernetes:latest
+        displayName: Image Scan
+
+      - task: Docker@2
+        inputs:
+          containerRegistry: 'Docker'
+          repository: 'mexparedes/spring-boot-kubernetes'
+          command: 'push'
+          tags: 'latest'
