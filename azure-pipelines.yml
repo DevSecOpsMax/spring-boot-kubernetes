@@ -3,9 +3,6 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger:
-- main
-
 pool:
   vmImage: ubuntu-latest
 
@@ -18,9 +15,9 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/TEST-*.xml'
     javaHomeOption: 'JDKVersion'
-    sonarQubeRunAnalysis: false
+    sonarQubeRunAnalysis: true
+    sqGradlePluginVersionChoice: 'build'
     spotBugsAnalysis: false
-
 - task: SonarCloudPrepare@1
   inputs:
     SonarCloud: 'sonarcloud'
