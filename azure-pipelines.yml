@@ -18,17 +18,10 @@ stages:
           effectivePomSkip: false
           sonarQubeRunAnalysis: false
 
-      - task: CopyFiles@2
-        inputs:
-          sourceFolder: '$(Pipeline.Workspace)/s'
-          contents: |
-              **/build/libs/*.jar
-          targetFolder: '$(Build.ArtifactStagingDirectory)'
-
       - task: PublishBuildArtifacts@1
         inputs:
-          pathToPublish: '$(Build.ArtifactStagingDirectory)'
-          artifactName: appJar
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop'
           publishLocation: 'Container'
 
       - task: SonarCloudPrepare@1
