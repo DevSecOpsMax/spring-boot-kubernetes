@@ -25,6 +25,19 @@ stages:
           effectivePomSkip: false
           sonarQubeRunAnalysis: false
 
+      - task: CopyFiles@2
+        inputs:
+          sourceFolder: '$(Pipeline.Workspace)'
+          contents: |
+              **/build/libs/*.jar
+          targetFolder: '$(Build.ArtifactStagingDirectory)'
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: '$(Build.ArtifactStagingDirectory)'
+          artifactName: appJar
+          publishLocation: 'Container'
+
       - task: SonarCloudPrepare@1
 
         inputs:
@@ -37,7 +50,7 @@ stages:
         inputs:
           mavenPomFile: 'pom.xml'
           publishJUnitResults: true
-          testResultsFiles: '**/surefire-reports/TEST-*.pdf'
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
           javaHomeOption: 'JDKVersion'
           mavenVersionOption: 'Default'
           mavenAuthenticateFeed: false
@@ -55,7 +68,7 @@ stages:
           inputs:
             mavenPomFile: 'pom.xml'
             publishJUnitResults: true
-            testResultsFiles: '**/surefire-reports/TEST-*.pdf'
+            testResultsFiles: '**/surefire-reports/TEST-*.xml'
             javaHomeOption: 'JDKVersion'
             mavenVersionOption: 'Default'
             mavenAuthenticateFeed: false
@@ -70,7 +83,7 @@ stages:
        
 
 
-- stage: Container Security 
+- stage: Container_Security 
   jobs:
   - job: Container_Security
     displayName: 'Container Security'
@@ -79,7 +92,7 @@ stages:
         inputs:
           mavenPomFile: 'pom.xml'
           publishJUnitResults: true
-          testResultsFiles: '**/surefire-reports/TEST-*.pdf'
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
           javaHomeOption: 'JDKVersion'
           mavenVersionOption: 'Default'
           mavenAuthenticateFeed: false
@@ -114,4 +127,3 @@ stages:
           repository: 'mexparedes/spring-boot-kubernetes'
           command: 'push'
           tags: 'latest'
-
