@@ -26,18 +26,6 @@ stages:
           sonarQubeRunAnalysis: false
 
 
-      - task: CopyFiles@2
-        inputs:
-          sourceFolder: '$(Build.SourcesDirectory)'
-          contents: |
-              **/build/libs/*.jar
-          targetFolder: '$(Build.ArtifactStagingDirectory)'
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'drop'
-          publishLocation: 'Container'
-
       - task: SonarCloudPrepare@1
 
         inputs:
@@ -63,18 +51,6 @@ stages:
   - job: SCA
     displayName: 'SCA'
     steps:
-    
-        - task: Maven@4
-          inputs:
-            mavenPomFile: 'pom.xml'
-            publishJUnitResults: true
-            testResultsFiles: '**/surefire-reports/TEST-*.xml'
-            javaHomeOption: 'JDKVersion'
-            mavenVersionOption: 'Default'
-            mavenAuthenticateFeed: false
-            effectivePomSkip: false
-            sonarQubeRunAnalysis: false
-
         - task: dependency-check-build-task@6
           inputs:
             projectName: 'spring-boot-kubernetes'
@@ -88,16 +64,7 @@ stages:
   - job: Container_Security
     displayName: 'Container Security'
     steps:
-      - task: Maven@4
-        inputs:
-          mavenPomFile: 'pom.xml'
-          publishJUnitResults: true
-          testResultsFiles: '**/surefire-reports/TEST-*.xml'
-          javaHomeOption: 'JDKVersion'
-          mavenVersionOption: 'Default'
-          mavenAuthenticateFeed: false
-          effectivePomSkip: false
-          sonarQubeRunAnalysis: false
+
       - task: DockerInstaller@0
         inputs:
           dockerVersion: '17.09.0-ce'
