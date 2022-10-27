@@ -1,4 +1,5 @@
 # Starter pipeline
+
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
@@ -49,7 +50,11 @@ stages:
           pmdRunAnalysis: true
           findBugsRunAnalysis: true
           spotBugsRunAnalysis: true
-          
+      
+      - task: sonarcloud-buildbreaker@2
+        inputs:
+          SonarCloud: 'sonarcloud'
+          organization: 'devsecopsmax'
       - task: SonarCloudPublish@1
         inputs:
           pollingTimeoutSec: '300'
@@ -69,51 +74,51 @@ stages:
        
 
 
-- stage: Container_Security 
-  jobs:
-  - job: Container_Security
-    displayName: 'Container Security'
-    steps:
+# - stage: Container_Security 
+#   jobs:
+#   - job: Container_Security
+#     displayName: 'Container Security'
+#     steps:
 
-      - task: Maven@4
-        inputs:
-          mavenPomFile: 'pom.xml'
-          publishJUnitResults: false
-          javaHomeOption: 'JDKVersion'
-          mavenVersionOption: 'Default'
-          mavenAuthenticateFeed: false
-          effectivePomSkip: false
-          sonarQubeRunAnalysis: false
-      - task: Docker@2
-        inputs:
-          containerRegistry: 'Docker'
-          command: 'login'
+#       - task: Maven@4
+#         inputs:
+#           mavenPomFile: 'pom.xml'
+#           publishJUnitResults: false
+#           javaHomeOption: 'JDKVersion'
+#           mavenVersionOption: 'Default'
+#           mavenAuthenticateFeed: false
+#           effectivePomSkip: false
+#           sonarQubeRunAnalysis: false
+#       - task: Docker@2
+#         inputs:
+#           containerRegistry: 'Docker'
+#           command: 'login'
 
-      - task: Docker@2
-        inputs:
-          containerRegistry: 'Docker'
-          repository: 'mexparedes/spring-boot-kubernetes'
-          command: 'build'
-          Dockerfile: '**/Dockerfile'
-          tags: 'latest'
+#       - task: Docker@2
+#         inputs:
+#           containerRegistry: 'Docker'
+#           repository: 'mexparedes/spring-boot-kubernetes'
+#           command: 'build'
+#           Dockerfile: '**/Dockerfile'
+#           tags: 'latest'
 
-      - script: | 
-          sudo apt-get install -y rpm
-          wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
-          sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
-          # trivy image mexparedes/spring-boot-kubernetes:latest
-        displayName: Image Install
+#       - script: | 
+#           sudo apt-get install -y rpm
+#           wget https://github.com/aquasecurity/trivy/releases/download/v0.27.1/trivy_0.27.1_Linux-64bit.deb
+#           sudo dpkg -i trivy_0.27.1_Linux-64bit.deb
+#           # trivy image mexparedes/spring-boot-kubernetes:latest
+#         displayName: Image Install
 
-      - task: CmdLine@2
-        displayName: "Run trivy scan"
-        inputs:
-          script: |
-            trivy image --exit-code 0 --severity LOW,MEDIUM mexparedes/spring-boot-kubernetes:latest
-            trivy image --exit-code 1 --severity HIGH,CRITICAL mexparedes/spring-boot-kubernetes:latest
+#       - task: CmdLine@2
+#         displayName: "Run trivy scan"
+#         inputs:
+#           script: |
+#             trivy image --exit-code 0 --severity LOW,MEDIUM mexparedes/spring-boot-kubernetes:latest
+#             trivy image --exit-code 1 --severity HIGH,CRITICAL mexparedes/spring-boot-kubernetes:latest
 
-      - task: Docker@2
-        inputs:
-          containerRegistry: 'Docker'
-          repository: 'mexparedes/spring-boot-kubernetes'
-          command: 'push'
-          tags: 'latest'
+#       - task: Docker@2
+#         inputs:
+#           containerRegistry: 'Docker'
+#           repository: 'mexparedes/spring-boot-kubernetes'
+#           command: 'push'
+#           tags: 'latest'
