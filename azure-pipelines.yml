@@ -10,18 +10,19 @@ stages:
       - task: Maven@4
         inputs:
           mavenPomFile: 'pom.xml'
-          publishJUnitResults: false
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
           javaHomeOption: 'JDKVersion'
           mavenVersionOption: 'Default'
           mavenAuthenticateFeed: false
           effectivePomSkip: false
           sonarQubeRunAnalysis: false
 
-      - task: PublishBuildArtifacts@1
+      - task: CopyFiles@2
         inputs:
-          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-          ArtifactName: 'drop'
-          publishLocation: 'Container'
+          SourceFolder: '$(agent.builddirectory)'
+          Contents: '**/build/libs/*.jar'
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
       - task: SonarCloudPrepare@1
 
