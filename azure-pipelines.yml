@@ -20,7 +20,7 @@ stages:
 
       - task: CopyFiles@2
         inputs:
-          sourceFolder: $('home/vsts/work/1/s')
+          sourceFolder: $(homeArtificial)
           Contents: '**/build/libs/*.jar'
           TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
