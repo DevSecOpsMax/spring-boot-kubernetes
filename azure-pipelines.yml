@@ -55,17 +55,17 @@ stages:
           pollingTimeoutSec: '300'
         displayName: 'Publish Analysis Results'
 
-# - stage: SCA 
-#   jobs:
-#   - job: SCA
-#     displayName: 'SCA'
-#     steps:
+- stage: SCA 
+  jobs:
+  - job: SCA
+    displayName: 'SCA'
+    steps:
     
-#         - task: dependency-check-build-task@6
-#           inputs:
-#             projectName: 'spring-boot-kubernetes'
-#             scanPath: '$(Pipeline.Workspace)'
-#             format: 'HTML'
+        - task: dependency-check-build-task@6
+          inputs:
+            projectName: 'spring-boot-kubernetes'
+            scanPath: '$(Pipeline.Workspace)'
+            format: 'HTML'
        
 
 
