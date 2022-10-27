@@ -44,6 +44,11 @@ stages:
           effectivePomSkip: false
           sonarQubeRunAnalysis: true
           sqMavenPluginVersionChoice: 'pom'
+          
+      - task: SonarCloudPublish@1
+        inputs:
+          pollingTimeoutSec: '300'
+        displayName: 'Publish Analysis Results'
 
 - stage: SCA 
   jobs:
