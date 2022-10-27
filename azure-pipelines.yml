@@ -14,17 +14,6 @@ stages:
   - job: build
     displayName: 'Build'
     steps:
-      # - task: Maven@4
-      #   inputs:
-      #     mavenPomFile: 'pom.xml'
-      #     publishJUnitResults: true
-      #     testResultsFiles: '**/surefire-reports/TEST-*.xml'
-      #     javaHomeOption: 'JDKVersion'
-      #     mavenVersionOption: 'Default'
-      #     mavenAuthenticateFeed: false
-      #     effectivePomSkip: false
-      #     sonarQubeRunAnalysis: false
-
       - task: Maven@4
         inputs:
           mavenPomFile: 'pom.xml'
@@ -34,12 +23,9 @@ stages:
           mavenVersionOption: 'Default'
           mavenAuthenticateFeed: false
           effectivePomSkip: false
-          sonarQubeRunAnalysis: true
-          sqMavenPluginVersionChoice: 'pom'
-          checkStyleRunAnalysis: true
-          pmdRunAnalysis: true
-          findBugsRunAnalysis: true
-          spotBugsRunAnalysis: true
+          sonarQubeRunAnalysis: false
+
+    
       - task: SonarCloudPrepare@1
 
         inputs:
@@ -59,6 +45,10 @@ stages:
           effectivePomSkip: false
           sonarQubeRunAnalysis: true
           sqMavenPluginVersionChoice: 'pom'
+          checkStyleRunAnalysis: true
+          pmdRunAnalysis: true
+          findBugsRunAnalysis: true
+          spotBugsRunAnalysis: true
           
       - task: SonarCloudPublish@1
         inputs:
