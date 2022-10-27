@@ -20,7 +20,6 @@ stages:
 
       - task: CopyFiles@2
         inputs:
-          SourceFolder: '$(Build.SourcesDirectory)'
           Contents: '**/build/libs/*.jar'
           TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
