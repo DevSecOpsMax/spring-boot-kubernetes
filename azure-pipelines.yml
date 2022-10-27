@@ -51,17 +51,6 @@ stages:
     displayName: 'SCA'
     steps:
     
-        - task: Maven@4
-          inputs:
-            mavenPomFile: 'pom.xml'
-            publishJUnitResults: true
-            testResultsFiles: '**/surefire-reports/TEST-*.xml'
-            javaHomeOption: 'JDKVersion'
-            mavenVersionOption: 'Default'
-            mavenAuthenticateFeed: false
-            effectivePomSkip: false
-            sonarQubeRunAnalysis: false
-
         - task: dependency-check-build-task@6
           inputs:
             projectName: 'spring-boot-kubernetes'
@@ -75,19 +64,6 @@ stages:
   - job: Container_Security
     displayName: 'Container Security'
     steps:
-      - task: Maven@4
-        inputs:
-          mavenPomFile: 'pom.xml'
-          publishJUnitResults: true
-          testResultsFiles: '**/surefire-reports/TEST-*.xml'
-          javaHomeOption: 'JDKVersion'
-          mavenVersionOption: 'Default'
-          mavenAuthenticateFeed: false
-          effectivePomSkip: false
-          sonarQubeRunAnalysis: false
-      - task: DockerInstaller@0
-        inputs:
-          dockerVersion: '17.09.0-ce'
       - task: Docker@2
         inputs:
           containerRegistry: 'Docker'
