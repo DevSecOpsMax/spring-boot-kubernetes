@@ -20,7 +20,7 @@ stages:
 
       - task: CopyFiles@2
         inputs:
-          sourceFolder: $(homeArtificial)
+          sourceFolder: '$(system.defaultworkingdirectory)'
           Contents: '**/build/libs/*.jar'
           TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
