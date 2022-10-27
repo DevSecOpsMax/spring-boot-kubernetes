@@ -3,9 +3,6 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger:
-- main
-
 pool:
   vmImage: ubuntu-latest
 stages:
@@ -27,7 +24,7 @@ stages:
 
       - task: CopyFiles@2
         inputs:
-          sourceFolder: '$(Build.SourcesDirectory)'
+          sourceFolder: '$(Agent.BuildDirectory)'
           contents: |
               **/build/libs/*.jar
           targetFolder: '$(Build.ArtifactStagingDirectory)'
